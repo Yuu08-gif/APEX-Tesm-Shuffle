@@ -34,6 +34,7 @@ client.run(TOKEN)
 
 import os
 import dotenv
+import discord
 from server import server_thread
 from bot import run_bot  # bot.pyからrun_bot関数をインポート
 
@@ -41,6 +42,11 @@ dotenv.load_dotenv()
 
 TOKEN = os.environ.get("TOKEN")
 print(f"TOKEN LOADED? {'Yes' if TOKEN else 'No'}")
+
+intents = discord.Intents.default()
+intents.message_content = True
+intents.voice_states = True
+client = discord.Client(intents=intents)
 
 # Webサーバー起動（別スレッド）
 server_thread()
