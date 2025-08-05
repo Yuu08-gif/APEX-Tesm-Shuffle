@@ -1,3 +1,4 @@
+"""
 import os
 import discord
 import dotenv
@@ -29,3 +30,20 @@ server_thread()
 
 # Bot起動
 client.run(TOKEN)
+"""
+
+import os
+import dotenv
+from server import server_thread
+from bot import run_bot  # bot.pyからrun_bot関数をインポート
+
+dotenv.load_dotenv()
+
+TOKEN = os.environ.get("TOKEN")
+print(f"TOKEN LOADED? {'Yes' if TOKEN else 'No'}")
+
+# Webサーバー起動（別スレッド）
+server_thread()
+
+# Bot起動
+run_bot(TOKEN)
