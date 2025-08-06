@@ -53,11 +53,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 # プロジェクトファイルを全てコピー
 COPY . /bot
 
+# entrypoint.sh をコピーし、実行権限を与える
+COPY entrypoint.sh /bot/entrypoint.sh
+RUN chmod +x /bot/entrypoint.sh
+
 # ポート開放 (FastAPI + uvicornが使用するポート)
 EXPOSE 8080
 
-# FastAPIのサーバーを起動
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
-
-# Discord Botを実行する場合のコマンド（必要ならこちらを使用）
-# CMD ["python", "main.py"]
+# entrypoint.sh を実行する
+CMD ["/bot/entrypoint.sh"]
