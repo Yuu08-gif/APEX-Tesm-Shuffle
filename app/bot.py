@@ -90,26 +90,21 @@ import discord
 from discord.ext import commands
 import random
 
-# Intentsを設定
 intents = discord.Intents.default()
 intents.voice_states = True
 intents.guilds = True
 intents.members = True
 
-# Botを初期化
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# 除外メンバーと追加メンバーの管理
 excluded_members = set()
 included_members = set()
 last_shuffle = None
 
-# Botのログイン時イベント
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user}")
 
-# 通話参加者を取得するスラッシュコマンド
 @bot.slash_command(name="get_voice_members", description="通話参加者を取得します")
 async def get_voice_members(ctx: discord.ApplicationContext):
     voice_state = ctx.author.voice
@@ -121,19 +116,16 @@ async def get_voice_members(ctx: discord.ApplicationContext):
     member_names = [member.display_name for member in members]
     await ctx.respond(f"現在の参加者: {', '.join(member_names)}")
 
-# 除外メンバーを追加するスラッシュコマンド
 @bot.slash_command(name="exclude_member", description="対象から除外するメンバーを追加")
 async def exclude_member(ctx: discord.ApplicationContext, member: discord.Member):
     excluded_members.add(member.id)
     await ctx.respond(f"{member.display_name} を除外リストに追加しました。")
 
-# 対象メンバーを追加するスラッシュコマンド
 @bot.slash_command(name="include_member", description="対象に追加するメンバーを追加")
 async def include_member(ctx: discord.ApplicationContext, member: discord.Member):
     included_members.add(member.id)
     await ctx.respond(f"{member.display_name} を対象リストに追加しました。")
 
-# 対象メンバーを取得するヘルパー関数
 def get_target_members(members):
     targets = [m for m in members if m.id not in excluded_members]
     for uid in included_members:
@@ -142,7 +134,6 @@ def get_target_members(members):
             targets.append(user)
     return targets
 
-# チーム分けを行うヘルパー関数
 def shuffle_teams(members):
     global last_shuffle
     if len(members) < 2:
@@ -159,7 +150,6 @@ def shuffle_teams(members):
             return team1, team2
     return team1, team2
 
-# チーム分けを行うスラッシュコマンド
 @bot.slash_command(name="shuffle_teams", description="チーム分けを行います")
 async def shuffle_teams_command(ctx: discord.ApplicationContext):
     voice_state = ctx.author.voice
@@ -177,13 +167,8 @@ async def shuffle_teams_command(ctx: discord.ApplicationContext):
     team2_names = ", ".join([m.display_name for m in team2])
     await ctx.respond(f"【チーム分け結果】\nチーム1: {team1_names}\nチーム2: {team2_names}")
 
-# Botの実行関数
 def run_bot(token):
-    try:
-        bot.run(token)
-    except Exception as e:
-        print(f"Error while running the bot: {e}")
-
+    bot.run(token)  # ブロッキングメソッドなので、これを非同期で扱う方法を検討する
 """
 
 import discord
@@ -267,5 +252,5 @@ async def shuffle_teams_command(ctx: discord.ApplicationContext):
     team2_names = ", ".join([m.display_name for m in team2])
     await ctx.respond(f"【チーム分け結果】\nチーム1: {team1_names}\nチーム2: {team2_names}")
 
-def run_bot(token):
-    bot.run(token)  # ブロッキングメソッドなので、これを非同期で扱う方法を検討する
+async def run_bot(token):
+    await bot.start(token)  # 非同期でBotを起動
