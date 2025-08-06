@@ -18,7 +18,8 @@ def server_thread():
 	t.start()
 """
 
-import asyncio
+import os
+from threading import Thread
 from fastapi import FastAPI
 import uvicorn
 
@@ -28,10 +29,10 @@ app = FastAPI()
 async def root():
     return {"message": "Server is Online."}
 
-async def start():
-    config = uvicorn.Config(app, host="0.0.0.0", port=8080)
-    server = uvicorn.Server(config)
-    await server.serve()
+def start():
+    port = int(os.environ.get("PORT", 8080))  # ポートを環境変数から取得
+    uvicorn.run(app, host="0.0.0.0", port=port)
 
 def server_thread():
-    asyncio.run(start())  # 非同期処理を使ってサーバーを起動
+    t = Thread(target=start)
+    t.start()
