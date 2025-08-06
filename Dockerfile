@@ -1,4 +1,4 @@
-
+"""
 FROM python:3.11-slim
 
 # Set the working directory
@@ -27,10 +27,10 @@ EXPOSE 8080
 
 # 実行
 CMD python app/main.py
-
-
-
 """
+
+
+
 # ベースイメージ
 FROM python:3.11-slim
 
