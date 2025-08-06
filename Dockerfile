@@ -53,12 +53,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # プロジェクトファイルを全てコピー
 COPY . /bot
 
-# entrypoint.sh をコピーし、実行権限を与える
-COPY entrypoint.sh /bot/entrypoint.sh
-RUN chmod +x /bot/entrypoint.sh
+# ポートを環境変数で指定
+ENV PORT 8080
 
 # ポート開放 (FastAPI + uvicornが使用するポート)
 EXPOSE 8080
 
-# entrypoint.sh を実行する
-CMD ["/bot/entrypoint.sh"]
+# entrypoint.shを実行
+ENTRYPOINT ["/bin/bash", "/bot/entrypoint.sh"]
