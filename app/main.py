@@ -11,7 +11,7 @@ print(f"TOKEN LOADED? {'Yes' if TOKEN else 'No'}")
 intents = discord.Intents.default()
 intents.message_content = True
 intents.voice_states = True
-client = discord.Client(intents=intents)
+client = discord.Client(intents=intents,status=discord.Status.online、)
 
 @client.event
 async def on_ready():
