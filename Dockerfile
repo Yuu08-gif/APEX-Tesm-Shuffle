@@ -5,7 +5,7 @@ FROM python:3.11-slim
 #COPY requirements.txt .
 #RUN pip install --no-cache-dir -r requirements.txt
 
-WORKDIR /bot
+WORKDIR /app
 
 # 更新・日本語化
 RUN apt-get update && apt-get -y install locales && apt-get -y upgrade && \
@@ -17,12 +17,12 @@ ENV TZ Asia/Tokyo
 ENV TERM xterm
 
 # pip install
-COPY requirements.txt /bot/
+COPY requirements.txt .
 RUN pip install -r requirements.txt
-COPY . /bot
+COPY . /app
 
 # ポート開放 (uvicornで指定したポート)
 EXPOSE 8080
 
 # 実行
-CMD python app/main.py
+CMD ["python", "app/main.py"]
