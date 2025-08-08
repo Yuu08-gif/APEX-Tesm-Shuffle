@@ -1,4 +1,3 @@
-import os
 import discord
 import dotenv
 from server import server_thread
