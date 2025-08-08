@@ -18,8 +18,8 @@ ENV TERM xterm
 
 # pip install
 COPY requirements.txt .
-RUN pip install -r requirements.txt
-COPY . /app
+RUN pip install --no-cache-dir -r requirements.txt
+COPY app ./app
 
 # ポート開放 (uvicornで指定したポート)
 EXPOSE 8080
