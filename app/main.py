@@ -2,6 +2,8 @@ import os
 import discord
 import dotenv
 from server import server_thread
+from discord import app_commands
+import re
 
 dotenv.load_dotenv()
 
@@ -11,11 +13,13 @@ print(f"TOKEN LOADED? {'Yes' if TOKEN else 'No'}")
 intents = discord.Intents.default()
 intents.message_content = True
 intents.voice_states = True
-client = discord.Client(intents=intents,command_prefix="!")
+client = discord.Client(intents=intents)
+tree = app_commands.CommandTree(client)
 
 @client.event
 async def on_ready():
     print(f'✅ Bot logged in as {client.user}')
+    await tree.sync()
 
 @client.event
 async def on_message(message):
@@ -24,9 +28,12 @@ async def on_message(message):
     if message.content.startswith('$hello'):
         await message.channel.send('Hello!')
 
-@client.command(name="ping", description="pingを返します")
-async def ping(ctx: discord.ApplicationContext):
-    await ctx.respond('pong')
+@tree.command(name="test",description="シます")
+async def addition(interaction: discord.Interaction,formula:str):
+    await interaction.response.send_message(f"シました")
+
+
+
 
 # Webサーバー起動（別スレッド）
 server_thread()
