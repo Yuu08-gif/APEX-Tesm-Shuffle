@@ -29,9 +29,13 @@ async def on_message(message):
     if message.content.startswith('$hello'):
         await message.channel.send('Hello!')
 
-@tree.command(name="test",description="シます")
-async def addition(interaction: discord.Interaction,formula:str):
-    await interaction.response.send_message(f"シました")
+@tree.command(name="test", description="シます")
+async def addition(interaction: discord.Interaction, formula: str):
+    # 0〜99の乱数を生成し、5未満なら5%
+    if random.randint(0, 99) < 5:
+        await interaction.response.send_message("膣内射精感謝")
+    else:
+        await interaction.response.send_message("シました")
 
 
 excluded_members_dict = {}
