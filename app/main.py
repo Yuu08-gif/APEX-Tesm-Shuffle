@@ -24,9 +24,9 @@ async def on_message(message):
     if message.content.startswith('$hello'):
         await message.channel.send('Hello!')
 
-@client.command(name="ping", description="pingを返します")
+@client.command(name='ping', description='pingを返します')
 async def ping(ctx: discord.ApplicationContext):
-    await ctx.respond("pong")
+    await ctx.respond('pong')
 
 # Webサーバー起動（別スレッド）
 server_thread()
