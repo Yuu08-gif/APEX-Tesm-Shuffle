@@ -50,7 +50,7 @@ async def toggle_exclude_member(interaction: discord.Interaction, member: discor
         excluded_members_dict[user_id].append(member.id)
         await interaction.response.send_message(f"🚫 {member.display_name} を除外リストに追加しました。")
 
-@tree.command(name="vc_members", description="あなたが参加しているボイスチャンネル内のメンバーを表示します（除外設定反映）")
+@tree.command(name="vc_members", description="あなたが参加しているボイスチャンネル内のメンバーを表示します（除外設定とBot除外）")
 async def vc_members(interaction: discord.Interaction):
     user = interaction.user
 
@@ -64,16 +64,19 @@ async def vc_members(interaction: discord.Interaction):
     # 除外設定の確認
     excluded_ids = excluded_members_dict.get(user.id, [])
 
-    # 除外されたメンバーを除く
-    visible_members = [m.display_name for m in members if m.id not in excluded_ids]
+    # 除外リストおよびBotを除外
+    visible_members = [
+        m.display_name
+        for m in members
+        if m.id not in excluded_ids and not m.bot
+    ]
 
     if not visible_members:
-        await interaction.response.send_message("⚠️ 表示できるメンバーがいません（全員除外されている可能性があります）")
+        await interaction.response.send_message("⚠️ 表示できるメンバーがいません（全員除外・Bot・自分自身のみの可能性があります）")
         return
 
     member_list = "\n".join(visible_members)
-    await interaction.response.send_message(f"🎤 **{voice_channel.name}** に参加しているメンバー（除外済）:\n{member_list}")
-
+    await interaction.response.send_message(f"🎤 **{voice_channel.name}** に参加しているメンバー（除外済＋Bot除外）:\n{member_list}")
 
 # Webサーバー起動（別スレッド）
 server_thread()
