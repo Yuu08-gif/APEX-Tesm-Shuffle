@@ -41,8 +41,7 @@ async def exclude_members(interaction: discord.Interaction, members: list[discor
     excluded_ids = [member.id for member in members]
     excluded_members_dict[user_id] = excluded_ids
     excluded_names = [member.display_name for member in members]
-    await interaction.response.send_message(
-        f"✅ 除外設定を保存しました。\n以下のメンバーはVC表示から除外されます：\n{', '.join(excluded_names)}")
+    await interaction.response.send_message(f"✅ 除外設定を保存しました。\n以下のメンバーはVC表示から除外されます：\n{', '.join(excluded_names)}")
 
 @tree.command(name="vc_members", description="あなたが参加しているボイスチャンネル内のメンバーを表示します（除外設定反映）")
 async def vc_members(interaction: discord.Interaction):
@@ -66,8 +65,7 @@ async def vc_members(interaction: discord.Interaction):
         return
 
     member_list = "\n".join(visible_members)
-    await interaction.response.send_message(
-        f"🎤 **{voice_channel.name}** に参加しているメンバー（除外済）:\n{member_list}")
+    await interaction.response.send_message(f"🎤 **{voice_channel.name}** に参加しているメンバー（除外済）:\n{member_list}")
 
 
 # Webサーバー起動（別スレッド）
