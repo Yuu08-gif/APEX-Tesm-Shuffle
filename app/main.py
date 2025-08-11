@@ -32,17 +32,23 @@ async def on_message(message):
 async def addition(interaction: discord.Interaction,formula:str):
     await interaction.response.send_message(f"シました")
 
+@tree.command(name="vc_members", description="あなたが参加しているボイスチャンネル内のメンバーを表示します")
+async def vc_members(interaction: discord.Interaction):
+    user = interaction.user
+
+    # ユーザーがVCに入っていない場合
+    if not user.voice or not user.voice.channel:
+        await interaction.response.send_message("❌ あなたはボイスチャンネルに参加していません。", ephemeral=True)
+        return
+
+    voice_channel = user.voice.channel
+    members = voice_channel.members  # VC内のメンバー一覧
+    member_names = [member.display_name for member in members]
+
+    member_list = "\n".join(member_names)
+    await interaction.response.send_message(f"🎤 **{voice_channel.name}** に参加しているメンバー:\n{member_list}")
 
 
-@tree.command(name="in?",description="イる？")
-async def addition(interaction: discord.Interaction):
-    members = [i.name for i in message.author.voice.channel.members]
-    team = []
-    for i in range(party_num):
-        team.extend(members[i:len(members):party_num])
-        #print ('\n'.join(team))
-    
-    await interaction.response.send_message(f"{'\n'.join(team)}")
 
 
 # Webサーバー起動（別スレッド）
