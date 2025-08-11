@@ -10,7 +10,7 @@ dotenv.load_dotenv()
 TOKEN = os.environ.get("TOKEN")
 print(f"TOKEN LOADED? {'Yes' if TOKEN else 'No'}")
 
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 intents.message_content = True
 intents.voice_states = True
 client = discord.Client(intents=intents)
@@ -41,8 +41,8 @@ team = []
 async def addition(interaction: discord.Interaction):
     for i in range(party_num):
         team.extend(members[i:len(members):party_num])
-    print ('\n'.join(team))
-    await interaction.response.send_message(f"シました")
+    #print ('\n'.join(team))
+    await interaction.response.send_message(f'\n'.join(team))
 
 
 # Webサーバー起動（別スレッド）
