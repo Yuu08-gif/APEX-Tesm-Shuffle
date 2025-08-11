@@ -32,16 +32,16 @@ async def on_message(message):
 async def addition(interaction: discord.Interaction,formula:str):
     await interaction.response.send_message(f"シました")
 
-members = [i.name for i in message.author.voice.channel.members]
 
-party_num = 2
-team = []
 
 @tree.command(name="in?",description="イる？")
 async def addition(interaction: discord.Interaction):
+    members = [i.name for i in message.author.voice.channel.members]
+    team = []
     for i in range(party_num):
         team.extend(members[i:len(members):party_num])
-    #print ('\n'.join(team))
+        #print ('\n'.join(team))
+    
     await interaction.response.send_message('\n'.join(team))
 
 
