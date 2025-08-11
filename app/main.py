@@ -98,10 +98,12 @@ async def vc_members(interaction: discord.Interaction):
     await interaction.response.send_message(f"🎤 **{voice_channel.name}** に参加しているメンバー（除外済＋Bot除外）:\n{member_list}")
 
 
-@tree.command(name="チーム分け", description="設定されたチーム数でVCメンバーを分けます")
+@tree.command(name="team_divide", description="設定されたチーム数・人数配分でVCメンバーを分けます")
 async def team_divide(interaction: discord.Interaction):
     user = interaction.user
-    team_count = team_settings_dict.get(user.id, 2)  # デフォルトは2
+    user_id = user.id
+    team_count = team_settings_dict.get(user_id, 2)
+    distribution = team_distribution_dict.get(user_id)
 
     if not user.voice or not user.voice.channel:
         await interaction.response.send_message("❌ あなたはボイスチャンネルに参加していません。", ephemeral=True)
@@ -110,8 +112,7 @@ async def team_divide(interaction: discord.Interaction):
     voice_channel = user.voice.channel
     members = voice_channel.members
 
-    excluded_ids = excluded_members_dict.get(user.id, [])
-
+    excluded_ids = excluded_members_dict.get(user_id, [])
     valid_members = [m for m in members if m.id not in excluded_ids and not m.bot]
 
     if not valid_members:
@@ -123,18 +124,61 @@ async def team_divide(interaction: discord.Interaction):
 
     teams = [[] for _ in range(team_count)]
 
-    for i, member in enumerate(valid_members):
-        teams[i % team_count].append(member.display_name)
+    # 分配方法
+    if distribution:
+        total_required = sum(distribution)
+        if total_required > len(valid_members):
+            await interaction.response.send_message(
+                f"❌ メンバー数が足りません（必要: {total_required}人、現在: {len(valid_members)}人）", ephemeral=True)
+            return
 
+        idx = 0
+        for team_idx, count in enumerate(distribution):
+            teams[team_idx] = valid_members[idx:idx+count]
+            idx += count
+    else:
+        # 通常のround-robin分配
+        for i, member in enumerate(valid_members):
+            teams[i % team_count].append(member)
+
+    # メッセージ作成
     msg_lines = [f"🎯 **{voice_channel.name}** のメンバーを {team_count} チームに分けました："]
     for idx, team_members in enumerate(teams, start=1):
         if team_members:
-            msg_lines.append(f"**チーム {idx}**:\n- " + "\n- ".join(team_members))
+            msg_lines.append(f"**チーム {idx}**:\n- " + "\n- ".join([m.display_name for m in team_members]))
         else:
             msg_lines.append(f"**チーム {idx}**: メンバーなし")
 
     await interaction.response.send_message("\n\n".join(msg_lines))
-    
+
+
+team_distribution_dict = {}
+@tree.command(name="set_team_distribution", description="チームごとの人数配分を設定します（例: 3 2 1）")
+@app_commands.describe(distribution="スペース区切りで人数を入力（チーム数と一致させる）")
+async def set_team_distribution(interaction: discord.Interaction, distribution: str):
+    user_id = interaction.user.id
+
+    # 入力値のバリデーション
+    try:
+        counts = list(map(int, distribution.strip().split()))
+    except ValueError:
+        await interaction.response.send_message("❌ 数字をスペースで区切って入力してください。例: `3 2 1`", ephemeral=True)
+        return
+
+    # 現在のチーム数取得（設定されてなければ2）
+    team_count = team_settings_dict.get(user_id, 2)
+
+    if len(counts) != team_count:
+        await interaction.response.send_message(f"❌ チーム数（{team_count}）と人数配分の数（{len(counts)}）が一致していません。", ephemeral=True)
+        return
+
+    if any(n < 0 for n in counts):
+        await interaction.response.send_message("❌ 各チームの人数は0以上である必要があります。", ephemeral=True)
+        return
+
+    team_distribution_dict[user_id] = counts
+    await interaction.response.send_message(f"✅ 人数配分を設定しました：{counts}")
+
 
 # Webサーバー起動（別スレッド）
 server_thread()
