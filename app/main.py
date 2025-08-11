@@ -32,7 +32,18 @@ async def on_message(message):
 async def addition(interaction: discord.Interaction,formula:str):
     await interaction.response.send_message(f"シました")
 
+@tree.command(name="test",description="シます")
+async def addition(interaction: discord.Interaction,formula:str):
+    await interaction.response.send_message(f"シました")
+    
+members = [i.name for i in message.author.voice.channel.members]
 
+party_num = 2
+team = []
+
+for i in range(party_num):
+    team.extend(members[i:len(members):party_num])
+    print ('\n'.join(team))
 
 
 # Webサーバー起動（別スレッド）
