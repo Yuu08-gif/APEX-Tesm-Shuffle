@@ -98,7 +98,7 @@ async def vc_members(interaction: discord.Interaction):
     await interaction.response.send_message(f"🎤 **{voice_channel.name}** に参加しているメンバー（除外済＋Bot除外）:\n{member_list}")
 
 
-@tree.command(name="team_divide", description="設定されたチーム数・人数配分でVCメンバーを分けます")
+@tree.command(name="チーム分け", description="設定されたチーム数・人数配分でVCメンバーを分けます")
 async def team_divide(interaction: discord.Interaction):
     user = interaction.user
     user_id = user.id
@@ -153,7 +153,7 @@ async def team_divide(interaction: discord.Interaction):
 
 
 team_distribution_dict = {}
-@tree.command(name="set_team_distribution", description="チームごとの人数配分を設定します（例: 3 2 1）")
+@tree.command(name="人数配分", description="チームごとの人数配分を設定します（例: 3 2 1）")
 @app_commands.describe(distribution="スペース区切りで人数を入力（チーム数と一致させる）")
 async def set_team_distribution(interaction: discord.Interaction, distribution: str):
     user_id = interaction.user.id
