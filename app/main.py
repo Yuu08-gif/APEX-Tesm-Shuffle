@@ -11,7 +11,7 @@ print(f"TOKEN LOADED? {'Yes' if TOKEN else 'No'}")
 intents = discord.Intents.default()
 intents.message_content = True
 intents.voice_states = True
-client = discord.Client(intents=intents,status=discord.Status.online)
+client = discord.Client(intents=intents,command_prefix="!")
 
 @client.event
 async def on_ready():
@@ -24,7 +24,7 @@ async def on_message(message):
     if message.content.startswith('$hello'):
         await message.channel.send('Hello!')
 
-@client.command(name='ping', description='pingを返します')
+@client.command(name="ping", description="pingを返します")
 async def ping(ctx: discord.ApplicationContext):
     await ctx.respond('pong')
 
