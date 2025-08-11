@@ -34,14 +34,21 @@ async def addition(interaction: discord.Interaction,formula:str):
 
 excluded_members_dict = {}
 
-@tree.command(name="exclude_members", description="VCメンバー表示から除外したいメンバーを指定します")
-@app_commands.describe(members="除外したいメンバー（複数選択可）")
-async def exclude_members(interaction: discord.Interaction, members: list[discord.Member]):
+@tree.command(name="toggle_exclude_member", description="VCメンバー表示からの除外状態を切り替えます")
+@app_commands.describe(member="除外状態を切り替えたいメンバー")
+async def toggle_exclude_member(interaction: discord.Interaction, member: discord.Member):
     user_id = interaction.user.id
-    excluded_ids = [member.id for member in members]
-    excluded_members_dict[user_id] = excluded_ids
-    excluded_names = [member.display_name for member in members]
-    await interaction.response.send_message(f"✅ 除外設定を保存しました。\n以下のメンバーはVC表示から除外されます：\n{', '.join(excluded_names)}")
+    if user_id not in excluded_members_dict:
+        excluded_members_dict[user_id] = []
+
+    if member.id in excluded_members_dict[user_id]:
+        # 既に除外されている → 除外解除（適応）
+        excluded_members_dict[user_id].remove(member.id)
+        await interaction.response.send_message(f"✅ {member.display_name} の除外を解除しました。")
+    else:
+        # 除外されていない → 除外に追加
+        excluded_members_dict[user_id].append(member.id)
+        await interaction.response.send_message(f"🚫 {member.display_name} を除外リストに追加しました。")
 
 @tree.command(name="vc_members", description="あなたが参加しているボイスチャンネル内のメンバーを表示します（除外設定反映）")
 async def vc_members(interaction: discord.Interaction):
