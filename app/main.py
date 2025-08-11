@@ -4,6 +4,7 @@ import dotenv
 from server import server_thread
 from discord import app_commands
 import re
+import random
 
 dotenv.load_dotenv()
 
@@ -32,8 +33,8 @@ async def on_message(message):
 async def addition(interaction: discord.Interaction,formula:str):
     await interaction.response.send_message(f"シました")
 
-excluded_members_dict = {}
 
+excluded_members_dict = {}
 @tree.command(name="toggle_exclude_member", description="VCメンバー表示からの除外状態を切り替えます")
 @app_commands.describe(member="除外状態を切り替えたいメンバー")
 async def toggle_exclude_member(interaction: discord.Interaction, member: discord.Member):
@@ -49,6 +50,20 @@ async def toggle_exclude_member(interaction: discord.Interaction, member: discor
         # 除外されていない → 除外に追加
         excluded_members_dict[user_id].append(member.id)
         await interaction.response.send_message(f"🚫 {member.display_name} を除外リストに追加しました。")
+
+
+team_settings_dict = {}
+@tree.command(name="set_team_count", description="チーム数を設定します（デフォルト2）")
+@app_commands.describe(team_count="チーム数（1以上の整数）")
+async def set_team_count(interaction: discord.Interaction, team_count: int):
+    if team_count < 1:
+        await interaction.response.send_message("❌ チーム数は1以上で指定してください。", ephemeral=True)
+        return
+
+    user_id = interaction.user.id
+    team_settings_dict[user_id] = team_count
+    await interaction.response.send_message(f"✅ チーム数を {team_count} に設定しました。")
+
 
 @tree.command(name="vc_members", description="あなたが参加しているボイスチャンネル内のメンバーを表示します（除外設定とBot除外）")
 async def vc_members(interaction: discord.Interaction):
@@ -77,6 +92,45 @@ async def vc_members(interaction: discord.Interaction):
 
     member_list = "\n".join(visible_members)
     await interaction.response.send_message(f"🎤 **{voice_channel.name}** に参加しているメンバー（除外済＋Bot除外）:\n{member_list}")
+
+
+@tree.command(name="team_divide", description="設定されたチーム数でVCメンバーを分けます")
+async def team_divide(interaction: discord.Interaction):
+    user = interaction.user
+    team_count = team_settings_dict.get(user.id, 2)  # デフォルトは2
+
+    if not user.voice or not user.voice.channel:
+        await interaction.response.send_message("❌ あなたはボイスチャンネルに参加していません。", ephemeral=True)
+        return
+
+    voice_channel = user.voice.channel
+    members = voice_channel.members
+
+    excluded_ids = excluded_members_dict.get(user.id, [])
+
+    valid_members = [m for m in members if m.id not in excluded_ids and not m.bot]
+
+    if not valid_members:
+        await interaction.response.send_message("⚠️ 除外済みまたはBotを除いたメンバーがいません。", ephemeral=True)
+        return
+
+    import random
+    random.shuffle(valid_members)
+
+    teams = [[] for _ in range(team_count)]
+
+    for i, member in enumerate(valid_members):
+        teams[i % team_count].append(member.display_name)
+
+    msg_lines = [f"🎯 **{voice_channel.name}** のメンバーを {team_count} チームに分けました："]
+    for idx, team_members in enumerate(teams, start=1):
+        if team_members:
+            msg_lines.append(f"**チーム {idx}**:\n- " + "\n- ".join(team_members))
+        else:
+            msg_lines.append(f"**チーム {idx}**: メンバーなし")
+
+    await interaction.response.send_message("\n\n".join(msg_lines))
+    
 
 # Webサーバー起動（別スレッド）
 server_thread()
