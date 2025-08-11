@@ -35,7 +35,7 @@ async def addition(interaction: discord.Interaction,formula:str):
 
 
 excluded_members_dict = {}
-@tree.command(name="toggle_exclude_member", description="VCメンバー表示からの除外状態を切り替えます")
+@tree.command(name="除外切り替え", description="VCメンバー表示からの除外状態を切り替えます")
 @app_commands.describe(member="除外状態を切り替えたいメンバー")
 async def toggle_exclude_member(interaction: discord.Interaction, member: discord.Member):
     user_id = interaction.user.id
@@ -53,7 +53,7 @@ async def toggle_exclude_member(interaction: discord.Interaction, member: discor
 
 
 team_settings_dict = {}
-@tree.command(name="set_team_count", description="チーム数を設定します（デフォルト2）")
+@tree.command(name="チーム数の設定", description="チーム数を設定します（デフォルト2）")
 @app_commands.describe(team_count="チーム数（1以上の整数）")
 async def set_team_count(interaction: discord.Interaction, team_count: int):
     if team_count < 1:
@@ -65,7 +65,7 @@ async def set_team_count(interaction: discord.Interaction, team_count: int):
     await interaction.response.send_message(f"✅ チーム数を {team_count} に設定しました。")
 
 
-@tree.command(name="vc_members", description="あなたが参加しているボイスチャンネル内のメンバーを表示します（除外設定とBot除外）")
+@tree.command(name="メンバー表示", description="あなたが参加しているボイスチャンネル内のメンバーを表示します（除外設定とBot除外）")
 async def vc_members(interaction: discord.Interaction):
     user = interaction.user
 
@@ -94,7 +94,7 @@ async def vc_members(interaction: discord.Interaction):
     await interaction.response.send_message(f"🎤 **{voice_channel.name}** に参加しているメンバー（除外済＋Bot除外）:\n{member_list}")
 
 
-@tree.command(name="team_divide", description="設定されたチーム数でVCメンバーを分けます")
+@tree.command(name="チーム分け", description="設定されたチーム数でVCメンバーを分けます")
 async def team_divide(interaction: discord.Interaction):
     user = interaction.user
     team_count = team_settings_dict.get(user.id, 2)  # デフォルトは2
