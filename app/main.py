@@ -28,9 +28,9 @@ async def on_message(message):
     if message.content.startswith('$hello'):
         await message.channel.send('Hello!')
 
-@tree.command(name="test",description="シます")
-async def addition(interaction: discord.Interaction,formula:str):
-    await interaction.response.send_message(f"シました")
+#@tree.command(name="test",description="シます")
+#async def addition(interaction: discord.Interaction,formula:str):
+#    await interaction.response.send_message(f"シました")
     
 members = [i.name for i in message.author.voice.channel.members]
 
