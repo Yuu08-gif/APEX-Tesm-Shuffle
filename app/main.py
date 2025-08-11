@@ -41,7 +41,6 @@ team = []
 async def addition(interaction: discord.Interaction):
     for i in range(party_num):
         team.extend(members[i:len(members):party_num])
-        i+1
     #print ('\n'.join(team))
     await interaction.response.send_message(f"{\n'.join(team)}")
 
